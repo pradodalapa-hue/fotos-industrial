@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDP INDUSTRIAL - CLOUD PHOTO HOST</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0a0a0b;
+            color: #e2e8f0;
+            font-family: 'Roboto', sans-serif;
+        }
+        .industrial-border {
+            border: 2px solid #00f3ff;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+        .neon-text {
+            color: #00f3ff;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            font-family: 'Orbitron', sans-serif;
+        }
+        .btn-jdp {
+            background: linear-gradient(135deg, #001f3f 0%, #0074d9 100%);
+            transition: all 0.3s ease;
+            border: 1px solid #00f3ff;
+        }
+        .btn-jdp:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+        }
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #preview {
+            max-height: 200px;
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-6">
+
+    <!-- HEADER -->
+    <header class="w-full max-w-4xl mb-10 text-center">
+        <h1 class="neon-text text-4xl font-bold mb-2">JDP INDUSTRIAL</h1>
+        <p class="text-gray-400 tracking-widest uppercase text-sm">Sistema Supremo de Hospedagem de Imagens</p>
+    </header>
+
+    <main class="w-full max-w-2xl glass-panel p-8 rounded-lg industrial-border">
+        
+        <!-- CONFIGURAÇÃO -->
+        <div class="mb-8 space-y-4">
+            <h2 class="text-lg font-bold text-blue-400 border-b border-blue-900 pb-2">CONFIGURAÇÃO DE ACESSO</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="password" id="token" placeholder="GitHub Token (PAT)" class="bg-black border border-gray-700 p-2 rounded focus:border-cyan-500 outline-none text-sm">
+                <input type="text" id="repo" placeholder="Usuário/Repositorio (ex: jose/fotos)" class="bg-black border border-gray-700 p-2 rounded focus:border-cyan-500 outline-none text-sm">
+            </div>
+        </div>
+
+        <!-- UPLOAD AREA -->
+        <div class="flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-10 hover:border-cyan-500 transition-colors cursor-pointer" id="drop-zone">
+            <input type="file" id="fileInput" class="hidden" accept="image/*">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-cyan-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p class="text-gray-300">Arraste a foto ou <span class="text-cyan-400 font-bold">Clique aqui</span></p>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="mt-6 flex flex-col items-center">
+            <img id="preview" src="" alt="Preview" class="rounded shadow-lg mb-4 border border-gray-700">
+            <button id="uploadBtn" class="btn-jdp w-full py-3 rounded font-bold uppercase tracking-widest hidden">Gerar Link Industrial</button>
+        </div>
+
+        <!-- RESULTADO -->
+        <div id="resultArea" class="mt-8 hidden">
+            <label class="text-xs text-cyan-500 font-bold uppercase">Link Gerado:</label>
+            <div class="flex mt-2">
+                <input type="text" id="finalLink" readonly class="bg-black border border-gray-700 p-3 rounded-l w-full text-green-400 font-mono text-sm">
+                <button onclick="copyLink()" class="bg-cyan-600 px-4 rounded-r hover:bg-cyan-500 transition-colors">COPIAR</button>
+            </div>
+            <p class="text-[10px] text-gray-500 mt-2 italic">* O link pode demorar alguns segundos para propagar no GitHub.</p>
+        </div>
+
+    </main>
+
+    <footer class="mt-auto pt-10 text-gray-600 text-xs">
+        HELENA v13.5 - KERNEL SUPREMO JDP INDUSTRIAL
+    </footer>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('drop-zone');
+        const preview = document.getElementById('preview');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const resultArea = document.getElementById('resultArea');
+        const finalLink = document.getElementById('finalLink');
+
+        // Abrir seletor de arquivo
+        dropZone.onclick = () => fileInput.click();
+
+        // Preview da imagem
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                    uploadBtn.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // Função de Upload para GitHub
+        uploadBtn.onclick = async () => {
+            const token = document.getElementById('token').value;
+            const repo = document.getElementById('repo').value;
+            const file = fileInput.files[0];
+
+            if (!token || !repo) {
+                alert("Sr. José, por favor preencha o Token e o Repositório.");
+                return;
+            }
+
+            uploadBtn.innerText = "PROCESSANDO...";
+            uploadBtn.disabled = true;
+
+            const fileName = `jdp_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+            const reader = new FileReader();
+
+            reader.onload = async () => {
+                const base64Content = reader.result.split(',')[1];
+                const url = `https://api.github.com/repos/${repo}/contents/uploads/${fileName}`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Upload industrial: ${fileName}`,
+                            content: base64Content
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Gerar link raw
+                        const rawUrl = `https://raw.githubusercontent.com/${repo}/main/uploads/${fileName}`;
+                        finalLink.value = rawUrl;
+                        resultArea.classList.remove('hidden');
+                        uploadBtn.innerText = "SUCESSO!";
+                        uploadBtn.style.background = "#28a745";
+                    } else {
+                        alert("Erro no upload. Verifique o Token e as permissões do repositório.");
+                        uploadBtn.innerText = "FALHA NO SISTEMA";
+                        uploadBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Erro de conexão com o Kernel GitHub.");
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function copyLink() {
+            finalLink.select();
+            document.execCommand('copy');
+            alert("Link copiado para a área de transferência, Sr. José.");
+        }
+    </script>
+</body>
+</html>
