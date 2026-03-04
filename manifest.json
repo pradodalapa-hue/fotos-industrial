@@ -1,6 +1,6 @@
 {
-    "name": "COMANDO CENTRAL JDP",
-    "short_name": "MAGNATA_JDP",
+    "name": "JDP Industrial Cloud",
+    "short_name": "JDP Cloud",
     "start_url": "index.html",
     "display": "standalone",
     "background_color": "#050506",
