@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="manifest" href="manifest.json"><title>SISTEMA JDP</title><style>
+                        body { background:#000; color:#fff; font-family:monospace; margin:0; overflow:hidden; display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; }
+                        #term { width:80%; text-align:left; font-size:18px; color:#0f0; text-shadow:0 0 5px #0f0; }
+                        #muralha { display:none; text-align:center; animation: fadeIn 2s; }
+                        .logo { width:150px; filter:drop-shadow(0 0 10px #bf953f); margin-bottom:20px; }
+                        .btn-w { display:inline-block; margin-top:20px; padding:15px 30px; background:#25d366; color:#fff; text-decoration:none; border-radius:5px; font-weight:bold; font-family:sans-serif; }
+                        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+                    </style></head><body>
+                    <div id="term"></div>
+                    <div id="muralha">
+                        <img class="logo" src="https://raw.githubusercontent.com/pradodalapa-hue/fotos-industrial/main/img/JDP_1774061215892_1774053336836.png">
+                        <h2 style="color:#bf953f">ACESSO BLOQUEADO</h2>
+                        <p>ESTE DISPOSITIVO FOI IDENTIFICADO E BLOQUEADO.</p>
+                        <a href="https://wa.me/5592984846058" class="btn-w">FALAR COM MESTRE JOSÉ</a>
+                    </div>
+                    <script>
+                        const C = { id:'LINK', k:'TElOSzE3NzY3NDQw', d:'pradodalapa-hue.github.io' };
+                        const t = document.getElementById('term');
+                        const m = document.getElementById('muralha');
+                        
+                        const msg = ["> ACESSANDO KERNEL JDP...", "> VERIFICANDO LICENÇA...", "> ERRO CRÍTICO: VIOLAÇÃO DE DOMÍNIO!", "> RASTREANDO LOCALIZAÇÃO...", "> BLOQUEIO REMOTO ATIVADO PELO MESTRE JOSÉ DIVINO.", "> AGUARDE..."];
+                        let l=0, c=0;
+
+                        function type() {
+                            if(l < msg.length) {
+                                if(c < msg[l].length) { t.innerHTML += msg[l].charAt(c); c++; setTimeout(type, 50); }
+                                else { t.innerHTML += "<br>"; l++; c=0; setTimeout(type, 800); }
+                            } else { 
+                                setTimeout(() => { t.style.display='none'; m.style.display='block'; }, 1000);
+                            }
+                        }
+
+                        async function validar() {
+                            if(window.location.hostname !== C.d) { type(); return; }
+                            try {
+                                const r = await fetch('https://raw.githubusercontent.com/pradodalapa-hue/Tetstserbidor/main/clientes.json?t='+Date.now());
+                                const d = await r.json();
+                                const u = d.find(i => i.id === C.id && i.apiKey === C.k);
+                                if(u && u.status === 'ativo') {
+                                    const r2 = await fetch('https://raw.githubusercontent.com/pradodalapa-hue/Tetstserbidor/main/' + u.path + 'payload.json');
+                                    const p = await r2.json();
+                                    document.open(); document.write(decodeURIComponent(escape(atob(p.payload)))); document.close();
+                                } else { type(); }
+                            } catch(e) { type(); }
+                        }
+                        if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+                        validar();
+                    </script></body></html>
