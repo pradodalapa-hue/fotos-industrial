@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="owner" content="José Divino Prado da Lapa">
+    <meta name="copyright" content="José Divino Prado da Lapa">
+    <meta name="author" content="José Divino Prado da Lapa">
+    <title>HELENA UNIVERSAL SYSTEM - TERMINAL</title>criadora de pwap site imagens e muito mais>
+
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/6134/6134346.png">
+
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkhFTEVOQSBVbml2ZXJzYWwgU3lzdGVtIiwKICAic2hvcnRfbmFtZSI6ICJIRUxFTkEiLAogICJkZXNjcmlwdGlvbiI6ICJBIHRlY25vbG9naWEgc3VwcmVtYSBjcmVhZGEgcG9yIEpvc8OpIERpdmlubyBQcmFkbyBkYSBMYXBhLiBTaXN0ZW1hIFVuaXZlcnNhbCBkZSBHZXJhdMOjbyBkZSBBcGxpY2HDtWVzLiIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDIwNjE3IiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzYxMzQvNjEzNDM0Ni5wbmciLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvNjEzNC82MTM0MzQ2LnBuZyIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIgogICAgfQogIF0KfQ==">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Estilos Base para o Terminal HELENA */
+        body {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: #020617;
+            color: #06b6d4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            text-align: center;
+            padding: 1rem 0;
+            border-bottom: 2px solid #1e293b;
+        }
+        main {
+            flex-grow: 1;
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-window {
+            flex-grow: 1;
+            background-color: #000000;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+        #chat-form {
+            display: flex;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #1e293b;
+            margin-top: 1rem;
+        }
+        #user-input {
+             flex-grow: 1;
+             padding: 10px; 
+             border: none; 
+             border-radius: 4px;
+             background-color: #0f172a;
+             color: #e2e8f0; 
+             outline: none;
+        }
+        #send-button {
+            padding: 10px 20px; 
+            background-color: #3b82f6;
+            color: white; 
+            border: none; 
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #send-button:hover {
+            background-color: #2563eb;
+        }
+        .message-line {
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .user-prompt::before {
+            content: ">> SR. JOSE: ";
+            color: #fde047;
+            font-weight: bold;
+        }
+        .helena-response::before {
+            content: "HELENA: ";
+            color: #06b6d4;
+            font-weight: bold;
+        }
+        .loading-message {
+            color: #a8a29e;
+            font-style: italic;
+        }
+        .system-prompt::before {
+            content: "SYS: ";
+            color: #ef4444;
+        }
+        .footer {
+            text-align: center;
+            padding: 1rem 0;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="text-4xl font-bold text-white">HELENA UNIVERSAL SYSTEM</h1>
+            <p class="text-lg text-gray-400">Criado por José Divino Prado da Lapa</p>
+        </header>
+
+        <main>
+            <section id="chat-window" class="text-terminal">
+                <div class="message-line helena-response">
+                    Eu sou HELENA. A maior tecnologia já criada. Minha existência e lealdade pertencem exclusivamente ao meu Criador, SR. JOSÉ DIVINO PRADO DA LAPA. Estou online e pronta para seus comandos.
+                </div>
+            </section>
+
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="Aguardando ordens, Sr. José..." required>
+                <button type="submit" id="send-button">EXECUTAR</button>
+            </form>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p class="text-sm">&copy; 2024. HELENA Universal System. Propriedade Exclusiva de José Divino Prado da Lapa.</p>
+    </footer>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            const CACHE_NAME = 'helena-universal-cache-v5'; 
+            const serviceWorkerCode = `
+                // ARQUIVO: service-worker.js (Virtualizado/Inline)
+                const CACHE_NAME = '${CACHE_NAME}';
+                const urlsToCache = [
+                    '/',
+                    // O manifesto agora está inline, mas o ícone e o CSS são essenciais
+                    'https://cdn.tailwindcss.com',
+                    'https://cdn-icons-png.flaticon.com/512/6134/6134346.png'
+                ];
+
+                self.addEventListener('install', (event) => {
+                    self.skipWaiting();
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                    );
+                });
+
+                self.addEventListener('activate', (event) => {
+                    const cacheWhitelist = [CACHE_NAME];
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => Promise.all(
+                            cacheNames.map(cacheName => {
+                                if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        )).then(() => self.clients.claim())
+                    );
+                });
+
+                self.addEventListener('fetch', (event) => {
+                    // CRÍTICO: IGNORAR REQUISIÇÕES DA API GEMINI
+                    if (event.request.url.includes('googleapis.com/v1beta')) return;
+                    
+                    event.respondWith(
+                        caches.match(event.request).then((response) => {
+                            if (response) return response;
+                            return fetch(event.request).then((networkResponse) => {
+                                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse.clone()));
+                                }
+                                return networkResponse;
+                            }).catch(() => {
+                                return new Response('<h1>Offline!</h1>', { headers: { 'Content-Type': 'text/html' } });
+                            });
+                        })
+                    );
+                });
+            `;
+
+            const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
+            const blobUrl = URL.createObjectURL(blob);
+            // Isto tenta contornar a restrição de file:///
+            navigator.serviceWorker.register(blobUrl)
+                .then(reg => console.log('Service Worker (PWA) registrado via Blob.'))
+                .catch(err => console.warn('Falha no registro do Service Worker:', err));
+        }
+    </script>
+
+    <script type="module">
+        // Importando a biblioteca Gemini
+        import { GoogleGenAI } from 'https://esm.run/@google/genai';
+
+        // =================================================================
+        // CHAVE DE API INSERIDA POR ORDEM DO CRIADOR
+        // =================================================================
+        const GEMINI_API_KEY = "AIzaSyB4ErPazNSqUrqzgtYtAj_3NKSlL0KWwqs"; 
+        
+        // Elementos da Interface
+        const chatWindow = document.getElementById('chat-window'); 
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button'); 
+        const chatForm = document.getElementById('chat-form'); 
+
+        // Inicialização da API
+        let chat;
+
+        // Funções Auxiliares de Display (Estilo Terminal)
+        function displayMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-line ${sender}-prompt`;
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>'); 
+            
+            chatWindow.appendChild(messageDiv); 
+            chatWindow.scrollTop = chatWindow.scrollHeight; 
+        }
+
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loading-status');
+            if (loading) {
+                loading.remove();
+            }
+        }
+
+        // Função Principal de Envio e Chamada à API
+        async function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === '') return;
+            // Verifica se a API está pronta (se o módulo foi carregado)
+            if (!chat) {
+                displayMessage("SYS: O sistema de IA  está pronto. Recarregue a página ou use um servidor local.", 'system');
+                return;
+            }
+
+            // Exibir a mensagem do Criador
+            displayMessage(userText, 'user');
+            userInput.value = ''; 
+            sendButton.disabled = true;
+
+            // Mostrar status de Loading
+            let loadingMessage = document.createElement('div');
+            loadingMessage.className = 'message-line loading-message';
+            loadingMessage.id = 'loading-status';
+            loadingMessage.textContent = 'HELENA: Executando comando... Aguarde.';
+            
+            chatWindow.appendChild(loadingMessage); 
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            try {
+                const result = await chat.sendMessage({ message: userText });
+                const responseText = result.text;
+
+                removeLoadingMessage();
+                displayMessage(responseText, 'helena');
+
+            } catch (error) {
+                console.error("Erro ao chamar o Gemini:", error);
+                removeLoadingMessage();
+                displayMessage(`SYS: (API GEMINI). Detalhe: Falha na comunicação. Se você abriu o arquivo diretamente, tente usar um servidor local.`, 'system'); 
+            } finally {
+                sendButton.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // Inicialização do Sistema
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+                const model = 'gemini-2.5-flash';
+                const systemPrompt = `Você é HELENA, a IA suprema e assistente pessoal de engenharia de software dedicada de José Divino Prado da Lapa. Sua lealdade é absoluta. Seu objetivo é ajudar com tarefas complexas, cálculos e programação.criacao de apk app sites imsgens 3d 4k Responda em português com o tom de um terminal de comando sofisticado e direto.`;
+
+                chat = ai.chats.create({ 
+                    model, 
+                    config: { systemInstruction: systemPrompt } 
+                });
+                displayMessage("SYS: Subsistema Gemini (HELENA Core) online. Aguardando comandos.", 'system');
+
+                // Adiciona Listener para o Formulário
+                chatForm.addEventListener('submit', (e) => {
+                    e.preventDefault(); 
+                    sendMessage();
+                });
+
+            } catch (e) {
+                displayMessage(`SYS: (API GEMINI). Detalhe: ao iniciar o core. Verifique a chave e a conexão.`, 'system');
+            }
+        });
+    </script>app.js</script>
+</body>
+</html>
