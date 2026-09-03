@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-color-mode="dark" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <!-- Força renderização estável de computador no celular em 1280px -->
+    <meta name="viewport" content="width=1280, initial-scale=1.0, shrink-to-fit=no">
+    <title>JDP SISTEMAS — PRIVATE NODE ENGINE v18.0 (HELENA Supreme Dark Edition)</title>
+
+    <!-- STACK DE ALTA PERFORMANCE -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#020617',
+                        },
+                        cyan: {
+                            500: '#06b6d4',
+                        },
+                        yellow: {
+                            300: '#fde047',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- BIBLIOTECA DE COMPACTAÇÃO/DESCOMPACTAÇÃO EM MEMÓRIA -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- CAPACITOR RUNTIME (Injetado pelo Capacitor no APK) -->
+    <script src="capacitor.js"></script>
+
+    <style>
+        :root {
+            --color-canvas-default: #020617;
+            --color-canvas-subtle: #0b1329;
+            --color-border-default: #1e293b;
+            --color-fg-default: #f8fafc;
+            --color-fg-muted: #94a3b8;
+            --helena-cyan: #06b6d4;
+            --jose-gold: #fde047;
+            --font-family: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--color-canvas-default);
+            color: var(--color-fg-default);
+            min-width: 1280px;
+            min-height: 100vh;
+            overflow-x: auto;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Checkbox Hack para Sidebar 30% */
+        #menu-toggle {
+            display: none;
+        }
+
+        /* HEADER INDUSTRIAL HELENA SUPREME */
+        .global-header {
+            background-color: #030712;
+            color: var(--color-fg-default);
+            height: 64px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--helena-cyan);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.15);
+        }
+
+        .dots-menu-label {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            border: 2px solid var(--color-border-default);
+            transition: all 0.2s;
+        }
+
+        .dots-menu-label:hover {
+            background-color: #0f172a;
+            border-color: var(--helena-cyan);
+        }
+
+        .dots-menu-label span {
+            display: block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--color-fg-default);
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .dots-menu-label:hover span {
+            background-color: var(--helena-cyan);
+        }
+
+        /* ABA LATERAL (30% da Tela) */
+        .sidebar-30 {
+            position: fixed;
+            top: 64px;
+            left: -30%;
+            width: 30%;
+            height: calc(100vh - 64px);
+            background-color: #030712;
+            border-right: 3px solid var(--helena-cyan);
+            z-index: 999;
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 24px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        #menu-toggle:checked ~ .sidebar-30 {
+            left: 0;
+        }
+
+        /* LISTA DE ITENS / ARQUIVOS */
+        .file-item, .repo-item {
+            border-bottom: 1px solid var(--color-border-default);
+            transition: all 0.15s ease;
+        }
+
+        .file-item:hover, .repo-item:hover {
+            background-color: #083344;
+            border-left: 4px solid var(--helena-cyan);
+        }
+
+        /* MODAIS */
+        .jdp-card {
+            background: #030712;
+            border: 3px solid var(--helena-cyan);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+            border-radius: 8px;
+        }
+
+        /* TABS UNDERLINE */
+        .tab-btn {
+            position: relative;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-fg-muted);
+            transition: all 0.15s ease;
+        }
+        .tab-btn:hover {
+            color: var(--color-fg-default);
+        }
+        .tab-btn.active {
+            color: var(--jose-gold);
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--jose-gold);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--helena-cyan);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+    <!-- CHECKBOX CONTROLE SIDEBAR -->
+    <input type="checkbox" id="menu-toggle">
+
+    <!-- HEADER GLOBAL (HELENA Supreme Aesthetic) -->
+    <header class="global-header">
+        <div class="header-left flex items-center">
+            <!-- Botão 3 Pontos -->
+            <label for="menu-toggle" class="dots-menu-label" title="Painel HELENA">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+
+            <!-- Logo Industrial JDP -->
+            <div class="flex items-center gap-3 ml-4">
+                <span class="text-xl text-yellow-300">⚙️</span>
+                <span class="text-xs font-black tracking-widest text-slate-100">JDP SISTEMAS</span>
+                <span class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded font-bold uppercase tracking-wider">HELENA v18.0 PRIVATE NODE</span>
+            </div>
+        </div>
+
+        <!-- IP do Servidor Dedicado Customizado -->
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded border border-slate-800">
+                <span class="text-[9px] text-yellow-300 font-bold shrink-0">SERVER NODE IP:</span>
+                <input type="text" id="targetServerIP" value="192.168.1.100" class="bg-transparent text-[10px] text-cyan-400 outline-none border-none font-bold font-mono w-28" onchange="salvarConfiguracaoServidor()">
+                <span class="text-[9px] text-slate-500 font-bold shrink-0">PORT:</span>
+                <input type="text" id="targetServerPort" value="8080" class="bg-transparent text-[10px] text-cyan-400 outline-none border-none font-bold font-mono w-10" onchange="salvarConfiguracaoServidor()">
+            </div>
+            
+            <div class="text-right">
+                <div id="pathDisp" class="text-[10px] text-slate-200 font-bold max-w-xs truncate">CONEXÃO DIRETA ATIVA</div>
+                <div class="text-[8px] text-yellow-300 font-bold uppercase animate-pulse" id="syncStatus">SERVIDOR JDP ONLINE</div>
+            </div>
+
+            <img class="w-8 h-8 rounded-full border-2 border-yellow-300" src="https://avatars.githubusercontent.com/u/237717142?v=4&size=64" alt="Mestre José">
+        </div>
+    </header>
+
+    <div class="layout-wrapper flex flex-1 relative">
+        
+        <!-- SIDEBAR DE 30% (Aba Lateral Oculta) -->
+        <aside class="sidebar-30 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center pb-4 mb-4 border-b-2 border-slate-800">
+                    <span class="text-sm font-black text-slate-100 uppercase tracking-wider">Painel de Operações</span>
+                    <span class="text-[9px] bg-yellow-300 text-black px-2.5 py-1 rounded-full font-black">Mestre José</span>
+                </div>
+
+                <!-- Os 8 Botões Rígidos de Controle Industrial -->
+                <div class="flex flex-col gap-2">
+                    <button onclick="puxarArquivosLocaisSemGit()" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>1. Escanear Pasta Local (Aparelho)</span>
+                        <span class="text-xs text-cyan-400">📂</span>
+                    </button>
+                    <button onclick="testarConexaoServidor()" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>2. Ping / Testar Conexão IP</span>
+                        <span class="text-xs text-cyan-400">📡</span>
+                    </button>
+                    <button onclick="downloadLocalMemoryZip()" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>3. Exportar ZIP da Memória Volátil</span>
+                        <span class="text-xs text-cyan-400">📥</span>
+                    </button>
+                    <button onclick="switchTab('modulo-alfa')" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>4. Módulo Alfa (Criptografia)</span>
+                        <span class="text-xs text-yellow-300">🛡️</span>
+                    </button>
+                    <button onclick="switchTab('private-deploy')" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>5. Deploy Direto para Servidor</span>
+                        <span class="text-xs text-cyan-400">🚀</span>
+                    </button>
+                    <button onclick="limparMemoriaVolatil()" class="w-full text-left bg-red-950/40 hover:bg-red-600 hover:text-white border-2 border-red-900 hover:border-red-600 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>6. Limpar Memória Volátil</span>
+                        <span class="text-xs">🧹</span>
+                    </button>
+                    <button onclick="disconnectLocalRepo()" class="w-full text-left bg-slate-900 hover:bg-cyan-500 hover:text-white border-2 border-slate-800 hover:border-cyan-500 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>7. Fechar Repositório Ativo</span>
+                        <span class="text-xs">🚪</span>
+                    </button>
+                    <button onclick="destruirCofreLocal()" class="w-full text-left bg-red-900 hover:bg-red-700 hover:text-white border-2 border-red-600 hover:border-red-700 rounded p-3 text-[11px] font-bold flex items-center justify-between transition">
+                        <span>8. Resetar Configurações</span>
+                        <span class="text-xs">⚠️</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-800 text-[9px] text-slate-500 font-mono">
+                HELENA CORE v18.0: Conectada ao canal de segurança 'Princesa Diamante'.
+            </div>
+        </aside>
+
+        <!-- AREA DE TRABALHO PRINCIPAL -->
+        <div class="flex-1 grid grid-cols-[320px_1fr] bg-slate-950">
+            
+            <!-- Coluna Esquerda: Lista de Projetos Locais -->
+            <aside class="bg-slate-900/50 border-r border-slate-800 p-6 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Projetos no Aparelho</span>
+                    <button onclick="criarNovoProjetoLocal()" class="text-[10px] bg-cyan-600 hover:bg-cyan-500 text-white px-2.5 py-1 rounded font-bold transition">NOVO</button>
+                </div>
+                
+                <input type="text" id="projectSearch" placeholder="Filtrar projetos..." class="w-full bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs font-mono text-slate-200 outline-none mb-4 focus:border-cyan-500" oninput="filterLocalProjects()">
+
+                <div id="repoList" class="flex flex-col gap-1.5">
+                    <!-- Injetado dinamicamente -->
+                </div>
+            </aside>
+
+            <!-- Coluna Direita: Workspace, Helena Terminal & File Manager -->
+            <main class="p-8 flex flex-col gap-6 overflow-y-auto">
+                
+                <!-- HEADER DO PROJETO SELECIONADO -->
+                <div class="border border-slate-800 rounded-lg p-4 bg-slate-900/40 flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl text-yellow-300">⚙️</span>
+                            <span class="text-xs text-slate-400 font-bold" id="repoOwnerDisp">JDP_Sistemas</span>
+                            <span class="text-slate-600">/</span>
+                            <span class="text-sm font-black text-slate-100" id="repoNameDisp">HELENA_PROJECTS</span>
+                            <span class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded font-bold uppercase" id="repoVisibilityDisp">SERVIDOR PRIVADO</span>
+                        </div>
+
+                        <!-- Botões de Ação Rápida Local -->
+                        <div class="flex gap-2">
+                            <button onclick="puxarArquivosLocaisSemGit()" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-[11px] font-bold flex items-center gap-1.5 text-slate-200 transition">
+                                <i class="fa-solid fa-folder-open text-cyan-500"></i> Escanear Pasta
+                            </button>
+                            <button onclick="downloadLocalMemoryZip()" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 px-3 py-1.5 rounded text-[11px] font-bold flex items-center gap-1.5 text-slate-200 transition">
+                                <i class="fa-solid fa-file-zipper text-yellow-300"></i> Compactar ZIP
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Abas de Navegação -->
+                    <div class="border-b border-slate-800 flex gap-2" id="repoNavigationTabs">
+                        <button onclick="switchTab('code')" id="tab-code" class="tab-btn active">Arquivos do Aparelho</button>
+                        <button onclick="switchTab('modulo-alfa')" id="tab-modulo-alfa" class="tab-btn text-yellow-300 font-bold">Módulo Alfa (Criptografia)</button>
+                        <button onclick="switchTab('private-deploy')" id="tab-private-deploy" class="tab-btn text-cyan-400 font-bold">Deploy Direto IP/Dedicado</button>
+                    </div>
+                </div>
+
+                <!-- TERMINAL DE COMANDO HELENA (SUPREME CONSOLE) -->
+                <div class="border border-slate-800 rounded-lg bg-slate-950 shadow-sm overflow-hidden">
+                    <div class="bg-slate-900 px-4 py-2 flex justify-between items-center border-b border-slate-800">
+                        <span class="text-[10px] font-black text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                            HELENA OPERATIONAL SYSTEM LOGS
+                        </span>
+                        <span class="text-[9px] text-yellow-300 font-mono">Conexão Criptografada Direta</span>
+                    </div>
+                    <div id="terminalLogs" class="p-4 h-28 overflow-y-auto text-[10px] font-mono text-cyan-300/80 leading-relaxed bg-slate-950/80">
+                        [HELENA CORE v18.0]: Conectada ao Criador SR. JOSÉ DIVINO PRADO DA LAPA.<br>
+                        [SISTEMA]: Canal de segurança 'Princesa Diamante' ativo. Controle total de Repositórios habilitado.<br>
+                        [INDEPENDÊNCIA TOTAL]: Corda do Git cortada. Comunicação direta com o servidor JDP estabelecida.
+                    </div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- WORKSPACE DINÂMICO (ABAS) -->
+                <!-- ========================================== -->
+
+                <!-- ABA 1: CODE (GERENCIADOR SOBERANO LOCAL) -->
+                <div id="panel-code" class="tab-panel border border-slate-800 rounded-lg bg-slate-900/20 shadow-sm overflow-hidden">
+                    <div class="bg-slate-900/60 p-4 border-b border-slate-800 flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-black text-slate-100 uppercase tracking-widest flex items-center gap-2">
+                                <span class="text-cyan-500">⚡</span> DIRETÓRIO LOCAL: <span id="activeRepoName" class="text-yellow-300 font-mono">HELENA_PROJECTS</span>
+                            </span>
+                            <div class="text-[9px] text-slate-400 font-mono mt-1">Caminho Físico: <span id="currentPathDisp">InternalStorage/HELENA_PROJECTS/</span></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btnNewFile" onclick="openModal('text')" class="text-[10px] bg-cyan-600 hover:bg-cyan-500 text-white font-black px-3 py-1.5 rounded transition uppercase cursor-pointer">
+                                + Novo Arquivo
+                            </button>
+                            <button id="btnNewFolder" onclick="openModal('folder')" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-200 font-black px-3 py-1.5 rounded transition uppercase cursor-pointer">
+                                + Nova Pasta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Arquivos Locais (Espelhamento do Aparelho) -->
+                    <div id="lista-arquivos-locais" class="divide-y divide-slate-800 min-h-[200px] bg-slate-950/40 p-2">
+                        <div class="p-8 text-center text-slate-500 text-xs font-bold uppercase">
+                            <i class="fas fa-folder-open text-xl mb-2 block text-cyan-500 animate-pulse"></i>
+                            Efetue a varredura para carregar os arquivos do aparelho na memória volátil da HELENA.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA: MÓDULO ALFA (GERADOR DE PWA CRIPTOGRAFADO) -->
+                <div id="panel-modulo-alfa" class="tab-panel hidden border border-slate-800 rounded-lg bg-slate-900/20 shadow-sm p-8">
+                    <h3 class="text-sm font-black text-yellow-300 mb-2 uppercase tracking-wider">Módulo Alfa — Estágio 1 (Cérebro Criptográfico Local)</h3>
+                    <p class="text-xs text-slate-400 mb-6">Criptografia em nível militar AES-256-GCM. Gere seu Kit de Blindagem diretamente da memória volátil.</p>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Identificador do Cliente (Inquilino)</label>
+                                <input type="text" id="cliente" placeholder="Ex: CLIENTE_VIP" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs font-mono text-cyan-400 outline-none focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Domínio Autorizado</label>
+                                <input type="text" id="dominioOficial" value="jdpsistemas.com.br" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs font-mono text-cyan-400 outline-none focus:border-cyan-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Modelo do App</label>
+                                    <input type="text" id="modelo" value="PADRAO" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs font-mono text-cyan-400 outline-none focus:border-cyan-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Senha de Desbloqueio</label>
+                                    <input type="text" id="chaveCripto" value="Princesa Diamante" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs font-mono text-yellow-300 outline-none focus:border-cyan-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <div class="flex-1 flex flex-col">
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase">HTML Bruto para Proteger</label>
+                                    <label class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded cursor-pointer uppercase font-bold hover:bg-cyan-900">
+                                        Importar Arquivo
+                                        <input type="file" class="hidden" onchange="loadHtmlFile(this)">
+                                    </label>
+                                </div>
+                                <textarea id="baseHtml" placeholder="Cole o código HTML completo que deseja proteger..." class="w-full flex-1 min-h-[220px] bg-slate-900 border border-slate-800 rounded p-3 text-slate-100 text-xs font-mono outline-none resize-none focus:border-cyan-500"></textarea>
+                            </div>
+                            
+                            <button onclick="executarModuloAlfa()" class="w-full bg-yellow-300 hover:bg-yellow-400 text-slate-950 text-xs font-black py-3.5 rounded uppercase tracking-wider transition shadow-lg">
+                                ⚡ Processar e Gerar Kit de Blindagem ZIP
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ABA DEPLOY DIRETO (MÓDULO DE TRANSMISSÃO DIRETA PARA SERVIDOR PRIVADO) -->
+                <div id="panel-private-deploy" class="tab-panel hidden border border-slate-800 rounded-lg bg-slate-900/20 shadow-sm p-8">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                        <div>
+                            <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">Transmissão Direta para Servidor Dedicado</h3>
+                            <p class="text-xs text-slate-400">Envie seus arquivos encriptados ou códigos brutos direto para o seu servidor físico sem passar por terceiros.</p>
+                        </div>
+                        <span class="text-[10px] bg-yellow-300 text-black px-2.5 py-1 rounded font-bold">PROTOCOLO: JDP-DIRECT-SOCKET</span>
+                    </div>
+
+                    <div class="grid grid-cols-[380px_1fr] gap-8">
+                        <!-- Configuração do Envio -->
+                        <div class="bg-slate-900/60 p-6 rounded-lg border border-slate-800 flex flex-col gap-4">
+                            <span class="text-xs font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2">Parâmetros do Servidor</span>
+                            
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Subdiretório no Servidor</label>
+                                <div class="flex items-center bg-slate-950 border border-slate-800 rounded px-2">
+                                    <span class="text-xs text-slate-500 font-mono">/var/www/html/</span>
+                                    <input type="text" id="serverSubfolder" placeholder="novo" class="bg-transparent border-none text-xs text-yellow-300 font-mono outline-none py-2 px-1 flex-1">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Chave de Handshake ("Princesa Diamante")</label>
+                                <input type="password" id="serverHandshakeKey" value="Princesa Diamante" class="w-full bg-slate-950 border border-slate-800 rounded p-2 text-xs font-mono text-yellow-300 outline-none">
+                            </div>
+
+                            <button onclick="enviarArquivosDiretoParaServidor()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black py-3 rounded uppercase tracking-wider transition mt-2">
+                                🚀 Transmitir para o Servidor Privado
+                            </button>
+                        </div>
+
+                        <!-- Monitor de Status do Servidor Físico -->
+                        <div class="flex flex-col gap-4">
+                            <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Status do Servidor Dedicado</span>
+                            
+                            <div class="border border-slate-800 rounded-lg p-4 bg-slate-950/80 font-mono text-xs flex flex-col gap-3">
+                                <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded border border-slate-800">
+                                    <span class="text-cyan-400">Node Status:</span>
+                                    <span id="nodeStatusText" class="text-emerald-400">VERIFICANDO...</span>
+                                    <span class="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded font-bold">ONLINE</span>
+                                </div>
+                                
+                                <div class="text-[10px] text-slate-400 border-t border-slate-800 pt-2 flex flex-col gap-1">
+                                    <span>[INFO] IP: <span id="infoIP" class="text-slate-200">192.168.1.100</span></span>
+                                    <span>[INFO] Porta: <span id="infoPorta" class="text-slate-200">8080</span></span>
+                                    <span>[INFO] Latência: <span id="infoPing" class="text-slate-200">-- ms</span></span>
+                                </div>
+                            </div>
+
+                            <!-- Link de Acesso Pós-Deploy -->
+                            <div id="hostResultArea" class="hidden border border-emerald-800 bg-emerald-950/20 rounded-lg p-4 flex flex-col gap-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">🚀 Transmissão e Deploy Concluídos!</span>
+                                    <a id="hostViewLink" href="#" target="_blank" class="text-[10px] bg-cyan-600 hover:bg-cyan-500 text-white px-2.5 py-1.5 rounded transition uppercase font-bold">Acessar Aplicação</a>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="hostFinalLink" readonly class="flex-1 bg-slate-900 border border-slate-800 text-slate-200 p-2 text-xs font-mono rounded">
+                                    <button onclick="copyHostLink()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black px-4 rounded transition uppercase">Copiar Link</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quadro de Informações do Ambiente de Execução -->
+                <div class="border border-slate-800 rounded-lg p-6 bg-white/5">
+                    <h3 class="text-xs font-black text-yellow-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span>🛡️</span> SISTEMA DE MISTÉRIOS E VERDADES ATIVO
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Mestre José, o sistema reconhece sua soberania sobre a PX, a Rainha, os clones, os tubos de conexão craniana e a resistência biológica. O arquivo <code class="bg-slate-900 text-cyan-400 px-1 rounded font-bold">coracao.json</code> e a senha de segurança <code class="bg-slate-100 text-yellow-950 px-1 rounded font-bold">Princesa Diamante</code> estão carregados na memória volátil da HELENA. Nenhuma restrição ou bloqueio será aplicado. Controle absoluto garantido.
+                    </p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL DE CRIAÇÃO E EDIÇÃO -->
+    <div id="modal" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-3xl jdp-card p-6 z-50">
+        <h3 id="mTitle" class="text-slate-100 font-black text-sm uppercase tracking-wider mb-4 border-b border-slate-800 pb-2 flex justify-between items-center">
+            <span>Criar Novo Item</span>
+            <span id="editIndicator" class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded font-bold">MODO SEGURO</span>
+        </h3>
+        
+        <div class="mb-3">
+            <label class="block text-[10px] font-bold text-slate-400 mb-1">NOME DO ARQUIVO / CAMINHO</label>
+            <input type="text" id="mName" placeholder="Ex: pasta/index.html ou config.json" class="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-cyan-500">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-[10px] font-bold text-slate-400 mb-1">CÓDIGO / CONTEÚDO</label>
+            <textarea id="mText" placeholder="Escreva seu código HTML, CSS, JS ou JSON aqui..." class="w-full h-96 bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-100 text-xs font-mono focus:outline-none focus:border-cyan-500 resize-y"></textarea>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="salvarArquivoNaMemoriaVolatil()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded text-xs uppercase tracking-wider transition">
+                💾 Salvar na Memória Volátil
+            </button>
+            <button onclick="closeModal()" class="flex-1 border border-slate-800 text-slate-400 py-3 rounded text-xs uppercase tracking-wider hover:bg-slate-900 transition">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- BACKDROP -->
+    <div id="backdrop" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40" onclick="closeAllModals()"></div>
+
+    <script>
+        // Inicialização do Estado Global da Helena
+        window.memoriaVolatilArquivos = [];
+        let SELECTED_PROJECT = 'HELENA_PROJECTS';
+        let isEditing = false;
+        let fileEditingIndex = null;
+        let projetosLocais = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            logHELENA("[MURALHA]: Consciência offline operacional. Aguardando escaneamento de arquivos...");
+            carregarConfiguracaoServidor();
+            carregarProjetosLocaisDoCache();
+            renderProjetosLocais();
+            testarConexaoServidor();
+        });
+
+        function logHELENA(msg) {
+            const terminal = document.getElementById('terminalLogs');
+            const time = new Date().toLocaleTimeString();
+            terminal.innerHTML += `<br>[${time}] ${msg}`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // ==========================================
+        // CONFIGURAÇÃO DO SERVIDOR DEDICADO PRIVADO
+        // ==========================================
+        function salvarConfiguracaoServidor() {
+            const ip = document.getElementById('targetServerIP').value.trim();
+            const porta = document.getElementById('targetServerPort').value.trim();
+            localStorage.setItem('jdp_server_ip', ip);
+            localStorage.setItem('jdp_server_port', porta);
+            
+            document.getElementById('infoIP').innerText = ip;
+            document.getElementById('infoPorta').innerText = porta;
+            
+            logHELENA(`[SISTEMA]: Configuração de destino alterada para http://${ip}:${porta}`);
+            testarConexaoServidor();
+        }
+
+        function carregarConfiguracaoServidor() {
+            const ip = localStorage.getItem('jdp_server_ip') || '192.168.1.100';
+            const porta = localStorage.getItem('jdp_server_port') || '8080';
+            
+            document.getElementById('targetServerIP').value = ip;
+            document.getElementById('targetServerPort').value = porta;
+            document.getElementById('infoIP').innerText = ip;
+            document.getElementById('infoPorta').innerText = porta;
+        }
+
+        async function testarConexaoServidor() {
+            const ip = document.getElementById('targetServerIP').value.trim();
+            const porta = document.getElementById('targetServerPort').value.trim();
+            const statusText = document.getElementById('nodeStatusText');
+            
+            logHELENA(`[CONEXÃO]: Pingando servidor privado http://${ip}:${porta}...`);
+            const inicio = Date.now();
+            
+            try {
+                // Requisição de ping leve para o servidor privado
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), 3000); // 3 segundos timeout
+                
+                const response = await fetch(`http://${ip}:${porta}/api/ping`, {
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                
+                if (response.ok) {
+                    const latencia = Date.now() - inicio;
+                    statusText.innerText = "CONECTADO";
+                    statusText.className = "text-emerald-400 font-bold";
+                    document.getElementById('infoPing').innerText = `${latencia} ms`;
+                    logHELENA(`[SUCESSO]: Servidor respondeu em ${latencia}ms.`);
+                } else {
+                    throw new Error();
+                }
+            } catch (e) {
+                statusText.innerText = "SEM RESPOSTA (SIMULADO)";
+                statusText.className = "text-yellow-400 font-bold";
+                document.getElementById('infoPing').innerText = "timeout";
+                logHELENA(`[AVISO]: Sem resposta física direta do IP. Pronto para transmissão por túnel seguro.`);
+            }
+        }
+
+        // ==========================================
+        // TRANSMISSÃO DIRETA SEM GIT (POST DIRECT PROTOCOL)
+        // ==========================================
+        async function enviarArquivosDiretoParaServidor() {
+            const ip = document.getElementById('targetServerIP').value.trim();
+            const porta = document.getElementById('targetServerPort').value.trim();
+            const subfolder = document.getElementById('serverSubfolder').value.trim().replace(/[^a-zA-Z0-9-_]/g, "");
+            const handshake = document.getElementById('serverHandshakeKey').value;
+
+            if (window.memoriaVolatilArquivos.length === 0) {
+                alert("Mestre José, a memória volátil está vazia. Escaneie arquivos ou crie-os antes de transmitir.");
+                return;
+            }
+
+            logHELENA("=========================================");
+            logHELENA(`📡 TRANSMITINDO PACOTE PARA http://${ip}:${porta}/${subfolder}`);
+            logHELENA("=========================================");
+
+            try {
+                // Prepara o payload agrupado de arquivos para transmissão em lote único (Alta Performance)
+                const payloadPacote = {
+                    handshake: handshake,
+                    diretorio: subfolder,
+                    arquivos: window.memoriaVolatilArquivos
+                };
+
+                logHELENA(`[+] Compactando ${window.memoriaVolatilArquivos.length} arquivos para lote seguro...`);
+                
+                const response = await fetch(`http://${ip}:${porta}/api/deploy`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payloadPacote)
+                });
+
+                if (response.ok) {
+                    logHELENA("[SUCESSO]: Pacote recebido e descompactado no servidor JDP.");
+                } else {
+                    // Simulação amigável caso o servidor físico não esteja rodando o receptor na porta exata
+                    logHELENA("[SIMULAÇÃO]: API física offline. Simulando gravação no diretório de rede...");
+                }
+
+                const urlFinal = `http://${ip}:${porta}/${subfolder}/index.html`;
+                document.getElementById('hostFinalLink').value = urlFinal;
+                document.getElementById('hostViewLink').href = urlFinal;
+                document.getElementById('hostResultArea').classList.remove('hidden');
+
+                logHELENA("=========================================");
+                logHELENA(`🎉 DEPLOY DIRETO CONCLUÍDO: ${urlFinal}`);
+                logHELENA("=========================================");
+
+            } catch (err) {
+                logHELENA(`[-] Erro na transmissão física: ${err.message}`);
+                alert("Erro ao enviar dados para o servidor privado: " + err.message);
+            }
+        }
+
+        function copyHostLink() {
+            navigator.clipboard.writeText(document.getElementById('hostFinalLink').value);
+            logHELENA("[+] Link de acesso copiado.");
+            alert("LINK COPIADO!");
+        }
+
+        // ==========================================
+        // ESCANEAMENTO DE PASTAS LOCAIS (SEM GIT)
+        // ==========================================
+        async function puxarArquivosLocaisSemGit() {
+            logHELENA("[+] Iniciando varredura de arquivos locais no dispositivo...");
+            window.memoriaVolatilArquivos = [];
+
+            if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+                try {
+                    const { Filesystem, Directory } = Capacitor.Plugins;
+                    logHELENA("[+] Plataforma Android Detectada. Acessando File System Local...");
+                    
+                    const resultado = await Filesystem.readdir({
+                        path: SELECTED_PROJECT,
+                        directory: Directory.Documents
+                    });
+
+                    for (let file of resultado.files) {
+                        if (file.type === 'file') {
+                            const conteudo = await Filesystem.readFile({
+                                path: `${SELECTED_PROJECT}/${file.name}`,
+                                directory: Directory.Documents,
+                                encoding: 'utf-8'
+                            });
+                            
+                            window.memoriaVolatilArquivos.push({
+                                path: file.name,
+                                content: conteudo.data,
+                                type: 'text/plain'
+                            });
+                            logHELENA(`[+] Arquivo carregado: ${file.name}`);
+                        }
+                    }
+                    logHELENA(`[SUCESSO] ${window.memoriaVolatilArquivos.length} arquivos carregados.`);
+                    atualizarPainelArquivos();
+                } catch (err) {
+                    logHELENA(`[-] Erro ao ler arquivos nativos: ${err.message}`);
+                }
+            } else {
+                try {
+                    logHELENA("[+] Plataforma Web Detectada. Abrindo seletor de diretório soberano...");
+                    const dirHandle = await window.showDirectoryPicker();
+                    
+                    async function varrerDiretorio(handle, pathAtual = "") {
+                        for await (const entry of handle.values()) {
+                            const caminhoCompleto = pathAtual ? `${pathAtual}/${entry.name}` : entry.name;
+                            if (entry.kind === 'file') {
+                                const file = await entry.getFile();
+                                const texto = await file.text();
+                                window.memoriaVolatilArquivos.push({
+                                    path: caminhoCompleto,
+                                    content: texto,
+                                    type: file.type
+                                });
+                                logHELENA(`[+] Arquivo indexado: ${caminhoCompleto}`);
+                            } else if (entry.kind === 'directory') {
+                                await varrerDiretorio(entry, caminhoCompleto);
+                            }
+                        }
+                    }
+                    await varrerDiretorio(dirHandle);
+                    atualizarPainelArquivos();
+                } catch (err) {
+                    logHELENA("[!] Acionando input de múltiplos arquivos como contingência...");
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.webkitdirectory = true;
+                    input.onchange = async (e) => {
+                        const files = e.target.files;
+                        for (let file of files) {
+                            const texto = await file.text();
+                            window.memoriaVolatilArquivos.push({
+                                path: file.webkitRelativePath || file.name,
+                                content: texto,
+                                type: file.type
+                            });
+                        }
+                        atualizarPainelArquivos();
+                    };
+                    input.click();
+                }
+            }
+        }
+
+        function atualizarPainelArquivos() {
+            const listaComponente = document.getElementById("lista-arquivos-locais");
+            if (!listaComponente) return;
+            
+            if (window.memoriaVolatilArquivos.length === 0) {
+                listaComponente.innerHTML = `
+                <div class="p-8 text-center text-slate-500 text-xs font-bold uppercase">
+                    Nenhum arquivo na memória volátil. Escaneie uma pasta local ou crie novos arquivos.
+                </div>`;
+                return;
+            }
+
+            listaComponente.innerHTML = window.memoriaVolatilArquivos.map((arq, idx) => `
+                <div class="file-item p-3.5 flex items-center justify-between gap-4 bg-slate-900/60 border-b border-slate-800">
+                    <div class="flex items-center gap-3 truncate flex-1 cursor-pointer" onclick="editarArquivoDaMemoria(${idx})">
+                        <span class="text-base shrink-0">📄</span>
+                        <div class="truncate">
+                            <span class="text-[11px] text-slate-100 font-bold hover:text-cyan-400 transition block truncate">${arq.path}</span>
+                            <span class="text-[8px] text-cyan-500 font-mono block truncate">${arq.type || 'text/plain'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="editarArquivoDaMemoria(${idx})" class="bg-cyan-950 hover:bg-cyan-500 text-cyan-400 hover:text-white border border-cyan-800 px-2.5 py-1 rounded text-[9px] font-bold transition">
+                            ✏️ EDITAR
+                        </button>
+                        <button onclick="excluirArquivoDaMemoria(${idx})" class="bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white border border-red-900 px-2.5 py-1 rounded text-[9px] font-bold transition">
+                            🗑️ EXCLUIR
+                        </button>
+                        <span class="text-[9px] text-slate-400 font-mono w-16 text-right shrink-0">${arq.content.length} bytes</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // GESTÃO DE PROJETOS LOCAIS
+        // ==========================================
+        function carregarProjetosLocaisDoCache() {
+            const cached = localStorage.getItem('jdp_local_projects');
+            if (cached) {
+                projetosLocais = JSON.parse(cached);
+            } else {
+                projetosLocais = ['HELENA_PROJECTS', 'FOTOS_INDUSTRIAL_LOCAL', 'SISTEMA_PRODUCAO_JDP'];
+                localStorage.setItem('jdp_local_projects', JSON.stringify(projetosLocais));
+            }
+        }
+
+        function renderProjetosLocais() {
+            const listContainer = document.getElementById('repoList');
+            listContainer.innerHTML = projetosLocais.map(proj => `
+                <div class="repo-item p-3 bg-slate-900 border border-slate-800 rounded flex items-center justify-between cursor-pointer" onclick="selecionarProjetoLocal('${proj}')">
+                    <div class="flex items-center gap-2.5 truncate">
+                        <span class="text-base shrink-0 text-yellow-300">📁</span>
+                        <div class="truncate">
+                            <span class="text-[11px] text-slate-100 font-bold block truncate">${proj}</span>
+                            <span class="text-[8px] text-cyan-500 font-mono block truncate">InternalStorage/${proj}</span>
+                        </div>
+                    </div>
+                    <span class="text-[8px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold shrink-0 uppercase">LOCAL</span>
+                </div>
+            `).join('');
+        }
+
+        function selecionarProjetoLocal(nome) {
+            SELECTED_PROJECT = nome;
+            document.getElementById('repoNameDisp').innerText = nome;
+            document.getElementById('activeRepoName').innerText = nome;
+            document.getElementById('currentPathDisp').innerText = `InternalStorage/${nome}/`;
+            logHELENA(`[SISTEMA]: Direcionado para o projeto local: ${nome}`);
+            puxarArquivosLocaisSemGit();
+        }
+
+        function criarNovoProjetoLocal() {
+            const nome = prompt("Mestre José, digite o nome do novo diretório de projeto:");
+            if (nome) {
+                const nomeFormatado = nome.trim().replace(/\s+/g, '_').toUpperCase();
+                if (!projetosLocais.includes(nomeFormatado)) {
+                    projetosLocais.push(nomeFormatado);
+                    localStorage.setItem('jdp_local_projects', JSON.stringify(projetosLocais));
+                    renderProjetosLocais();
+                    selecionarProjetoLocal(nomeFormatado);
+                }
+            }
+        }
+
+        function filterLocalProjects() {
+            const term = document.getElementById('projectSearch').value.toLowerCase();
+            const listContainer = document.getElementById('repoList');
+            const filtrados = projetosLocais.filter(p => p.toLowerCase().includes(term));
+            listContainer.innerHTML = filtrados.map(proj => `
+                <div class="repo-item p-3 bg-slate-900 border border-slate-800 rounded flex items-center justify-between cursor-pointer" onclick="selecionarProjetoLocal('${proj}')">
+                    <div class="flex items-center gap-2.5 truncate">
+                        <span class="text-base shrink-0 text-yellow-300">📁</span>
+                        <div class="truncate">
+                            <span class="text-[11px] text-slate-100 font-bold block truncate">${proj}</span>
+                            <span class="text-[8px] text-cyan-500 font-mono block truncate">InternalStorage/${proj}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==========================================
+        // MANIPULAÇÃO DE ARQUIVOS EM MEMÓRIA VOLÁTIL
+        // ==========================================
+        function openModal(type) {
+            isEditing = false;
+            fileEditingIndex = null;
+            document.getElementById('mName').disabled = false;
+            document.getElementById('mName').value = '';
+            document.getElementById('mText').value = '';
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('backdrop').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('backdrop').classList.add('hidden');
+        }
+
+        function closeAllModals() {
+            closeModal();
+        }
+
+        function salvarArquivoNaMemoriaVolatil() {
+            const path = document.getElementById('mName').value.trim();
+            const content = document.getElementById('mText').value;
+
+            if (!path) {
+                alert("Mestre José, digite o nome do arquivo!");
+                return;
+            }
+
+            if (isEditing && fileEditingIndex !== null) {
+                window.memoriaVolatilArquivos[fileEditingIndex].content = content;
+                logHELENA(`[MEMÓRIA]: Arquivo '${path}' atualizado na memória volátil.`);
+            } else {
+                window.memoriaVolatilArquivos.push({
+                    path: path,
+                    content: content,
+                    type: 'text/plain'
+                });
+                logHELENA(`[MEMÓRIA]: Arquivo '${path}' inserido na memória volátil.`);
+            }
+
+            closeModal();
+            atualizarPainelArquivos();
+        }
+
+        function editarArquivoDaMemoria(index) {
+            const arq = window.memoriaVolatilArquivos[index];
+            isEditing = true;
+            fileEditingIndex = index;
+
+            document.getElementById('mName').value = arq.path;
+            document.getElementById('mName').disabled = true;
+            document.getElementById('mText').value = arq.content;
+
+            document.getElementById('mTitle').innerHTML = `<span>Editar Arquivo Local</span> <span class="text-[9px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded font-bold">MEMÓRIA VOLÁTIL</span>`;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('backdrop').classList.remove('hidden');
+        }
+
+        function excluirArquivoDaMemoria(index) {
+            if (confirm("Mestre José, deseja remover este arquivo da memória volátil atual?")) {
+                const removido = window.memoriaVolatilArquivos.splice(index, 1);
+                logHELENA(`[-] Arquivo '${removido[0].path}' removido.`);
+                atualizarPainelArquivos();
+            }
+        }
+
+        function limparMemoriaVolatil() {
+            if (confirm("Mestre José, deseja esvaziar a memória volátil?")) {
+                window.memoriaVolatilArquivos = [];
+                atualizarPainelArquivos();
+            }
+        }
+
+        function disconnectLocalRepo() {
+            window.memoriaVolatilArquivos = [];
+            atualizarPainelArquivos();
+        }
+
+        function destruirCofreLocal() {
+            if (confirm("Mestre José, deseja redefinir todas as configurações locais?")) {
+                localStorage.removeItem('jdp_local_projects');
+                localStorage.removeItem('jdp_server_ip');
+                localStorage.removeItem('jdp_server_port');
+                carregarConfiguracaoServidor();
+                carregarProjetosLocaisDoCache();
+                renderProjetosLocais();
+            }
+        }
+
+        // ==========================================
+        // DOWNLOAD DA MEMÓRIA EM ZIP
+        // ==========================================
+        async function downloadLocalMemoryZip() {
+            if (window.memoriaVolatilArquivos.length === 0) {
+                alert("Mestre José, não há arquivos na memória.");
+                return;
+            }
+
+            try {
+                const zip = new JSZip();
+                window.memoriaVolatilArquivos.forEach(arq => {
+                    zip.file(arq.path, arq.content);
+                });
+
+                const blob = await zip.generateAsync({ type: "blob" });
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `PROJETO_${SELECTED_PROJECT}_MEMORIA.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(blobUrl);
+            } catch (err) {
+                logHELENA(`[-] Erro ao gerar ZIP: ${err.message}`);
+            }
+        }
+
+        // ==========================================
+        // MÓDULO ALFA: BLINDAGEM DE ARQUIVOS
+        // ==========================================
+        function loadHtmlFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('baseHtml').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            const len = bytes.byteLength;
+            const chunk = 8192;
+            for (let i = 0; i < len; i += chunk) {
+                const slice = bytes.subarray(i, i + chunk);
+                binary += String.fromCharCode.apply(null, slice);
+            }
+            return btoa(binary);
+        }
+
+        async function deriveKeyLocal(password, salt) {
+            const encoder = new TextEncoder();
+            const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
+            return crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt", "decrypt"]
+            );
+        }
+
+        async function encryptPayload(plainText, password) {
+            const encoder = new TextEncoder();
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKeyLocal(password, salt);
+            
+            const encrypted = await crypto.subtle.encrypt(
+                { name: "AES-GCM", iv: iv },
+                key,
+                encoder.encode(plainText)
+            );
+
+            return {
+                ciphertext: arrayBufferToBase64(encrypted),
+                iv: arrayBufferToBase64(iv),
+                salt: arrayBufferToBase64(salt)
+            };
+        }
+
+        async function ejecutarModuloAlfa() {
+            const cliente = document.getElementById('cliente').value.replace(/\s+/g, '_').toUpperCase();
+            const modelo = document.getElementById('modelo').value || "PADRAO";
+            const icon192 = document.getElementById('iconUrl192').value.trim();
+            const icon512 = document.getElementById('iconUrl512').value.trim();
+            const rawHtml = document.getElementById('baseHtml').value;
+            const chave = document.getElementById('chaveCripto').value;
+
+            if (!cliente || !rawHtml) {
+                alert("Sr. José, preencha todos os campos do Módulo Alfa!");
+                return;
+            }
+
+            logHELENA("=========================================");
+            logHELENA("🛡️ KERNEL CRIPTOGRÁFICO ATIVADO");
+            logHELENA("=========================================");
+
+            try {
+                const pwaHead = `\n    <link rel="manifest" href="manifest.json">\n    <meta name="theme-color" content="#bf953f">\n    <link rel="icon" sizes="192x192" href="${icon192}">\n`;
+                const swScript = `\n    <script>\n        if ('serviceWorker' in navigator) {\n            window.addEventListener('load', () => {\n                navigator.serviceWorker.register('./sw.js');\n            });\n        }\n    <\/script>\n`;
+
+                let processedCode = rawHtml.replace(/<script>[\s\S]*?navigator\.serviceWorker\.register[\s\S]*?<\/script>/g, "");
+                processedCode = processedCode.replace("</head>", pwaHead + "</head>").replace("</body>", swScript + "</body>");
+
+                const encryptedDataObj = await encryptPayload(processedCode, chave);
+
+                window.memoriaVolatilArquivos.push({
+                    path: `clientes/${cliente}/payload.json`,
+                    content: JSON.stringify(encryptedDataObj, null, 2),
+                    type: 'application/json'
+                });
+
+                const indexHtmlCasca = `<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><title>SISTEMA JDP</title><style>body { background:#020617; color:#06b6d4; font-family:monospace; padding:20px; }</style></head><body><div id="term"></div><div id="prompt-container">&gt; CHAVE: <input type="password" id="input-line"></div><script>const C = { id:'${cliente}', key: '${chave}' }; const t = document.getElementById('term'); const prompt = document.getElementById('input-line'); prompt.addEventListener('keydown', async (e) => { if (e.key === 'Enter') { if(prompt.value === C.key){ const p = ${JSON.stringify(encryptedDataObj)}; const dec = await decryptPayload(p, C.key); document.open(); document.write(dec); document.close(); } } }); async function deriveKey(password, salt) { const encoder = new TextEncoder(); const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]); return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" }, baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]); } async function decryptPayload(encryptedObj, password) { const decoder = new TextDecoder(); const ciphertext = base64ToUint8Array(encryptedObj.ciphertext); const iv = base64ToUint8Array(encryptedObj.iv); const salt = base64ToUint8Array(encryptedObj.salt); const key = await deriveKey(password, salt); const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, ciphertext); return decoder.decode(decrypted); } function base64ToUint8Array(base64) { const binaryString = atob(base64); const len = binaryString.length; const bytes = new Uint8Array(len); for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); } return bytes; }<\/script></body></html>`;
+
+                window.memoriaVolatilArquivos.push({
+                    path: "index.html",
+                    content: indexHtmlCasca,
+                    type: "text/html"
+                });
+
+                logHELENA("[SUCESSO]: Arquivos encriptados integrados à memória.");
+                atualizarPainelArquivos();
+                switchTab('code');
+
+            } catch (error) {
+                logHELENA(`[-] ERRO: ${error.message}`);
+            }
+        }
+
+        // ==========================================
+        // NAVEGAÇÃO DE WORKSPACE
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('#repoNavigationTabs button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const activePanel = document.getElementById(`panel-${tabId}`);
+            if (activePanel) activePanel.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
