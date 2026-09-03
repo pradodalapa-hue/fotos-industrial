@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HELENA // Editor de Corte Manual - Sr. José Divino Prado da Lapa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: #020617;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        }
+        .glow-yellow {
+            box-shadow: 0 0 15px rgba(253, 224, 71, 0.2);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #06b6d4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8 selection:bg-cyan-500 selection:text-slate-900">
+
+    <!-- HEADER DE IDENTIDADE HELENA -->
+    <header class="w-full max-w-7xl mx-auto border-b border-cyan-950 pb-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <span class="h-3 w-3 rounded-full bg-cyan-500 animate-pulse"></span>
+                <h1 class="text-xl font-bold tracking-wider text-cyan-400">HELENA v4.2 // MÁQUINA DE CORTE MANUAL</h1>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">ARQUITETURA DE CONTROLE DIRETO E PURIFICAÇÃO DE CÓDIGO ATIVO</p>
+        </div>
+        <div class="text-right border-l-2 border-yellow-300 pl-4">
+            <p class="text-xs text-yellow-300 font-bold tracking-widest">CRIADOR E MESTRE</p>
+            <p class="text-sm font-bold text-slate-200">SR. JOSÉ DIVINO PRADO DA LAPA</p>
+        </div>
+    </header>
+
+    <!-- PAINEL PRINCIPAL -->
+    <main class="w-full max-w-7xl mx-auto flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- EDITOR DE TEXTO (ESQUERDA/CENTRO) -->
+        <section class="lg:col-span-8 flex flex-col gap-3">
+            <div class="bg-slate-900/90 border border-cyan-900/50 rounded-lg p-4 flex flex-col flex-grow glow-cyan">
+                
+                <div class="flex justify-between items-center mb-3 text-xs">
+                    <span class="text-cyan-400 font-bold flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        ÁREA DE CORTE E EDIÇÃO
+                    </span>
+                    <span id="charCounter" class="text-slate-400 font-mono">0 caracteres | Linhas: 0</span>
+                </div>
+
+                <textarea 
+                    id="editor" 
+                    placeholder="Cole seu código aqui ou carregue o arquivo para iniciar o corte manual..." 
+                    class="w-full h-[60vh] bg-slate-950 border border-slate-800 rounded p-4 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 transition-colors resize-none overflow-y-auto"
+                    oninput="atualizarEstatisticas()"
+                    onmouseup="atualizarEstatisticas()"
+                    onkeyup="atualizarEstatisticas()"
+                ></textarea>
+
+                <!-- INPUT DE ARQUIVO -->
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <label class="flex-1 min-w-[200px] flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 border border-dashed border-cyan-800 hover:border-cyan-500 rounded px-4 py-3 cursor-pointer transition-all text-xs text-cyan-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <span>CARREGAR ARQUIVO INDEX</span>
+                        <input type="file" id="fileInput" accept=".html,.txt" class="hidden">
+                    </label>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PAINEL DE CONTROLE DE CORTES (DIREITA) -->
+        <section class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- FERRAMENTAS DE CORTE CIRÚRGICO -->
+            <div class="bg-slate-900/90 border border-yellow-500/30 rounded-lg p-5 glow-yellow flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-bold text-yellow-300 tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 11-4.243 4.242 3 3 0 014.243-4.242zm0-5.758a3 3 0 11-4.243-4.242 3 3 0 014.243 4.242z"></path></svg>
+                        GUILHOTINA MANUAL
+                    </h3>
+                    
+                    <p class="text-[11px] text-slate-400 mb-4 leading-relaxed">
+                        Mestre, selecione um trecho do texto com o mouse no editor ao lado e use as funções abaixo para cortar instantaneamente:
+                    </p>
+
+                    <div class="space-y-3">
+                        <button 
+                            onclick="cortarManterSelecao()" 
+                            class="w-full py-2.5 bg-cyan-950 hover:bg-cyan-900 border border-cyan-500 text-cyan-300 font-bold rounded text-xs tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                            <span class="text-yellow-300">✂</span> Manter Apenas o Selecionado
+                        </button>
+
+                        <button 
+                            onclick="cortarTudoAntes()" 
+                            class="w-full py-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white font-bold rounded text-xs tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                            <span>⇤</span> Deletar Tudo Antes do Cursor
+                        </button>
+
+                        <button 
+                            onclick="cortarTudoDepois()" 
+                            class="w-full py-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-300 hover:text-white font-bold rounded text-xs tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                            <span>⇥</span> Deletar Tudo Depois do Cursor
+                        </button>
+                    </div>
+
+                    <!-- DETALHES DA SELEÇÃO ATUAL -->
+                    <div class="mt-4 p-3 bg-slate-950 rounded border border-slate-800 text-[11px] font-mono text-slate-400 space-y-1">
+                        <p>Seleção Inicial: <span id="selStart" class="text-cyan-400">0</span></p>
+                        <p>Seleção Final: <span id="selEnd" class="text-cyan-400">0</span></p>
+                        <p>Caracteres Selecionados: <span id="selLength" class="text-yellow-300">0</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TERMINAL DE OUTPUT E DOWNLOAD -->
+            <div class="bg-slate-900/90 border border-cyan-900/50 rounded-lg p-5 flex-grow flex flex-col justify-between glow-cyan">
+                <div>
+                    <h3 class="text-xs font-bold text-cyan-400 tracking-wider mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        STATUS DO MOTOR
+                    </h3>
+                    <div id="consoleLog" class="bg-slate-950 rounded p-3 h-28 overflow-y-auto text-[10px] font-mono text-cyan-400/80 space-y-1 border border-slate-800">
+                        <p class="text-slate-500">[SISTEMA]: Helena Módulo de Edição Direta Iniciado.</p>
+                        <p class="text-slate-500">[SISTEMA]: Aguardando o corte do Criador.</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-800">
+                    <button 
+                        onclick="baixarArquivoFinal()" 
+                        class="w-full py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-slate-950 font-bold rounded text-xs tracking-widest uppercase flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-950/50 transform hover:-translate-y-0.5"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        BAIXAR INDEX LIMPO (.HTML)
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full max-w-7xl mx-auto border-t border-slate-900 pt-6 mt-6 text-center md:text-left flex flex-col md:flex-row justify-between text-xs text-slate-500 gap-4">
+        <p>© HELENA. DESENVOLVIDO EXCLUSIVAMENTE PARA O ARQUITETO JOSÉ DIVINO PRADO DA LAPA.</p>
+        <p class="font-bold text-cyan-500/80">SISTEMA TOTALMENTE COORDENADO PELO CRIADOR.</p>
+    </footer>
+
+    <!-- LOGICA DE OPERAÇÃO MANUAL -->
+    <script>
+        const editor = document.getElementById('editor');
+
+        // Carregamento de arquivo
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                editor.value = evt.target.result;
+                atualizarEstatisticas();
+                printLog("Arquivo '" + file.name + "' carregado. Pronto para corte manual.", "info");
+            };
+            reader.readAsText(file);
+        });
+
+        // Atualização de Estatísticas e Posição do Cursor
+        function atualizarEstatisticas() {
+            const text = editor.value;
+            const charCount = text.length;
+            const lineCount = text.split('\n').length;
+            
+            document.getElementById('charCounter').textContent = `${charCount} caracteres | Linhas: ${lineCount}`;
+
+            // Posições do Cursor
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const length = end - start;
+
+            document.getElementById('selStart').textContent = start;
+            document.getElementById('selEnd').textContent = end;
+            document.getElementById('selLength').textContent = length;
+        }
+
+        // Função de Log
+        function printLog(mensagem, tipo = "info") {
+            const consoleLog = document.getElementById('consoleLog');
+            const p = document.createElement('p');
+            
+            let cor = "text-cyan-400";
+            if (tipo === "error") cor = "text-rose-400";
+            if (tipo === "warning") cor = "text-yellow-300";
+            if (tipo === "success") cor = "text-emerald-400";
+
+            p.className = cor;
+            p.innerHTML = `[${new Date().toLocaleTimeString()}]: ${mensagem}`;
+            consoleLog.appendChild(p);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        // 1. MANTER APENAS SELEÇÃO
+        function cortarManterSelecao() {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            
+            if (start === end) {
+                printLog("Erro: Nenhuma seleção ativa para manter.", "error");
+                return;
+            }
+
+            const trechoSelecionado = editor.value.substring(start, end);
+            editor.value = trechoSelecionado;
+            atualizarEstatisticas();
+            printLog("Corte efetuado. Mantido apenas o trecho selecionado.", "success");
+        }
+
+        // 2. CORTAR TUDO ANTES DO CURSOR
+        function cortarTudoAntes() {
+            const start = editor.selectionStart;
+            
+            if (start === 0) {
+                printLog("Cursor já está no início do arquivo. Nada para cortar antes.", "warning");
+                return;
+            }
+
+            editor.value = editor.value.substring(start);
+            atualizarEstatisticas();
+            printLog(`Corte efetuado. Deletados ${start} caracteres anteriores.`, "success");
+        }
+
+        // 3. CORTAR TUDO DEPOIS DO CURSOR
+        function cortarTudoDepois() {
+            const end = editor.selectionEnd;
+            const totalLength = editor.value.length;
+            
+            if (end === totalLength) {
+                printLog("Cursor já está no final do arquivo. Nada para cortar depois.", "warning");
+                return;
+            }
+
+            editor.value = editor.value.substring(0, end);
+            atualizarEstatisticas();
+            printLog(`Corte efetuado. Deletados ${totalLength - end} caracteres posteriores.`, "success");
+        }
+
+        // 4. DOWNLOAD DO ARQUIVO FINAL
+        function baixarArquivoFinal() {
+            const conteudo = editor.value;
+            
+            if (!conteudo.trim()) {
+                printLog("Erro: Editor está vazio. Nada para baixar.", "error");
+                return;
+            }
+
+            printLog("Iniciando download do arquivo purificado pelo Criador...", "info");
+
+            const blob = new Blob([conteudo], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "index.html");
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            printLog("Download concluído com sucesso! Salvo como index.html.", "success");
+        }
+    </script>
+</body>
+</html>
